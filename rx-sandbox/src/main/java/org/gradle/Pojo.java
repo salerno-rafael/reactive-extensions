@@ -2,6 +2,12 @@ package org.gradle;
 
 public class Pojo {
 
+	@Override
+	public String toString() {
+		return "Pojo [element1=" + element1 + ", element2=" + element2
+				+ ", element3=" + element3 + "]";
+	}
+
 	private String element1;
 	private String element2;
 	private String element3;
