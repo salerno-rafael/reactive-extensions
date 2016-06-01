@@ -5,6 +5,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -12,10 +13,10 @@ import java.util.stream.Stream;
 import rx.Observable;
 import rx.functions.Func1;
 
-public class ReadFileV2 {
+public class ReadFilev3 {
 
 	public static void main(String[] args) throws Exception {
-		new ReadFileV2().start();
+		new ReadFilev3().start();
 	}
 	
 	public void start() throws Exception{
@@ -26,17 +27,20 @@ public class ReadFileV2 {
 		 Observable.just(linhas)
 		  .flatMap(y-> Observable.just(splitLines(y)))
 		  .flatMap(z-> Observable.just(parse(z)))
-		  .flatMap(new Func1<Stream<Pojo>, Observable<List<List<Pojo>>>>() {
+		  .flatMap(new Func1<Stream<Pojo>, Observable<List<HashMap<String,List<Pojo>>>>>() {
 		        @Override
-		        public  Observable<List<List<Pojo>>> call(Stream<Pojo> lines) {
+		        public  Observable<List<HashMap<String,List<Pojo>>>>call(Stream<Pojo> lines) {
 		         
 		        	List<Pojo> allLines =  lines.collect(Collectors.toList());
 		        	List<Pojo> l1 = allLines.stream().filter(x-> x.getElement1().equals("001")).collect(Collectors.toList());
 		        	List<Pojo> l2 = allLines.stream().filter(x-> x.getElement1().equals("002")).collect(Collectors.toList());
 		        
-		        	List<List<Pojo>> result = new ArrayList<List<Pojo>>();
-		        	result.add(l1);
-		        	result.add(l2);
+		        	HashMap<String,List<Pojo>> hash = new HashMap<>();
+		        	hash.put("001", l1);
+		        	hash.put("002",l2);
+		        	
+		          List<HashMap<String,List<Pojo>>> result = new ArrayList<HashMap<String,List<Pojo>>>();
+		          result.add(hash);
 		        	
 		            return Observable.just(result);
 		        }
@@ -45,7 +49,7 @@ public class ReadFileV2 {
 		  .subscribe(x->{
 			  x.forEach(lists-> {
 			
-				  System.out.println(lists);
+				  System.out.println(lists.keySet());
 			  });
 			  
 			  System.out.println(x);
